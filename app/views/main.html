@@ -11,11 +11,11 @@
   				<th><a href="" ng-click="ordenarPor('operadora')">Operadora</th>
   				<th><a href="" ng-click="ordenarPor('data')">Data</th>
   			</tr>
-  			<tr ng-class="{'selecionado negrito': contato.selecionado}" ng-repeat="contato in contatos | filter:criterioDeBusca | orderBy:criterioDeOrdenacao:direcaoDaOrdenacao">
-  				<td><input type="checkbox" ng-model="contato.selecionado"/></td>
+  			<tr ng-repeat="contato in contatos | filter:criterioDeBusca | orderBy:criterioDeOrdenacao:direcaoDaOrdenacao">
+  				<td><a href ng-click="apagarContatos(contato._id)"><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>
   				<td>{{contato.nome}}</td>
   				<td>{{contato.telefone}}</td>
-  				<td>{{contato.operadora.nome | lowercase}}</td>
+  				<td>{{contato.operadora}}</td>
   				<td>{{contato.data | date:'dd/MM/yyyy HH:mm'}}</td>
   			</tr>
   		</table>
@@ -41,7 +41,7 @@
     			O campo telefone deve ter o formato DDDDD-DDDD.
     		</div>
 
-        <select class="form-control" ng-model="contato.operadora" name="operadora"  ng-required="true" ng-options="operadora.nome + ' ( ' + (operadora.preco | currency) + ' )' for operadora in operadoras | orderBy:'nome'">
+        <select class="form-control" ng-model="contato.operadora" name="operadora"  ng-required="true" ng-options="operadora.nome + ' ( ' + (operadora.preco | currency) + ' )' group by operadora.categoria for operadora in operadoras | orderBy:'nome'">
   				<option value="">Selecione uma operadora</option>
   			</select>
         <div ng-show="contatoForm.operadora.$error.required" class="alert alert-danger">
