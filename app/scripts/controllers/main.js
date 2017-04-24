@@ -8,39 +8,60 @@
  * Controller of the angularjsExampleApp
  */
 angular.module('angularjsExampleApp')
-  .controller('MainCtrl', function ($scope, uppercaseFilter) {
+  .controller('MainCtrl', function ($scope, $http) {
       this.awesomeThings = [
        'HTML5 Boilerplate',
        'AngularJS',
        'Karma'
       ];
 
+      $scope.operadoras = [];
+      $scope.contatos = [];
       $scope.app = "Crud Lista Telefônica";
-      $scope.contatos = [
-        {nome:  "Pedro", telefone: "9999-8888", data: new Date(), operadora: {nome: "Oi", codigo: 14, categoria: "Celular"}},
-        {nome: "Ana", telefone: "9999-8877", data: new Date(), operadora: {nome: "Vivo", codigo: 15, categoria: "Celular"}},
-				{nome: "Maria", telefone: "9999-8866", data: new Date(), operadora: {nome: "Tim", codigo: 41, categoria: "Celular"}}
-      ];
 
-      $scope.operadoras = [
-        {nome: "Oi", codigo: 14, categoria: "Celular", preco : 2},
-        {nome: "Vivo", codigo: 15, categoria: "Celular", preco: 1},
-				{nome: "Tim", codigo: 41, categoria: "Celular", preco: 3},
-				{nome: "GVT", codigo: 25, categoria: "Fixo", preco: 1},
-				{nome: "Embratel", codigo: 21, categoria: "Fixo", preco: 2}
-      ]
+      var carregaContatos = function (){
+        $http.get("http://localhost:8000/contacts").then(function (response){
+          console.log(response.data);
+          if(response.status == 200){
+            $scope.contatos = response.data;
+          }
+        }).catch(function (error, status){
+            console.log("Problem : " + error);
+        });
+      }
+
+      var carregaOperadoras = function (){
+        $http.get("http://localhost:8000/operator").then(function (response){
+          console.log(response.data);
+          if(response.status == 200){
+            $scope.operadoras = response.data;
+          }
+        }).catch(function (error, status){
+            console.log("Problem : " + error);
+        });
+      }
 
       $scope.adicionarContato = function (contato){
         contato.data = new Date();
+        contato.operadora = contato.operadora.nome; //temporary fix
         $scope.contatos.push(angular.copy(contato));
+        $http.post("http://localhost:8000/contacts", contato).then(function (response){
+          console.log(response.data);
+          if(response.status == 200){
+            console.log("done");
+          }
+        }).catch(function (error, status){
+            console.log("Problem : " + error);
+        });
+
         delete $scope.contato;
         $scope.contatoForm.$setPristine();
       };
 
-      $scope.apagarContatos = function(contatos){
-        $scope.contatos = contatos.filter(function (contato){
-            if(!contato.selecionado) return contato;
-        });
+      $scope.apagarContatos = function(contatosId){
+            $http.delete("http://localhost:8000/contacts/" + contatosId).then(function(reponse){
+              carregaContatos();
+            });
       };
 
       $scope.isContatoSelecionado = function (contatos) {
@@ -54,4 +75,18 @@ angular.module('angularjsExampleApp')
         $scope.direcaoDaOrdenacao = !$scope.direcaoDaOrdenacao;
       }
 
+      carregaContatos();
+      carregaOperadoras();
+
+
   });
+
+  /*
+  example object
+  $scope.operadoras = [
+    {nome: "Oi", codigo: 14, categoria: "Celular", preco : 2},
+    {nome: "Vivo", codigo: 15, categoria: "Celular", preco: 1},
+    {nome: "Tim", codigo: 41, categoria: "Celular", preco: 3},
+    {nome: "GVT", codigo: 25, categoria: "Fixo", preco: 1},
+    {nome: "Embratel", codigo: 21, categoria: "Fixo", preco: 2}
+  ]*/
