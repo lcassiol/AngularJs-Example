@@ -14,3 +14,13 @@ Run `grunt` for building and `grunt serve` for preview.
 ## Testing
 
 Running `grunt test` will run the unit tests with karma.
+
+
+## To run for the first time do
+* Install NodeJs
+
+- npm install -g yo grunt-cli bower
+- npm install -g generator-angular
+
+- grunt serve
+
